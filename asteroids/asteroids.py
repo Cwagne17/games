@@ -1,7 +1,45 @@
 import os
 import pygame
+import random
 
-os.environ['SDL_VIDEO_CENTERED'] = '1'
+class Asteroid():
+    # Health is decreased when the player hits the asteroid
+    # with a bullet. When health reaches 0, the asteroid is
+    # destroyed.
+    health: int
+    
+    # Asteroid position is randomly generated horizontally
+    # and is set to be spawned above the screen
+    x: int
+    y: int
+    
+    # Size is randomly generated between 50 and 100 pixels
+    size: int = random.randint(50, 100)
+    
+    # The png image of the asteroid is loaded and scaled to
+    # the size of the asteroid
+    asteroid: pygame.Surface
+    
+    def __init__(self, width):
+        self.x = random.randint(0, int(width))
+        self.y = -self.size
+        
+        self.health = self.size // 10
+        
+        asteroidsPath = "assets/asteroids/"
+        asteroid = pygame.image.load(os.path.join(asteroidsPath, random.choice(os.listdir(asteroidsPath))))
+        self.asteroid = pygame.transform.scale(asteroid, (self.size, self.size))
+        
+        print(f"Asteroid spawned at {self.x}, {self.y} with size {self.size}")
+
+    def move(self):
+        self.y += 1
+
+    def draw(self, window):
+        window.blit(self.asteroid, (self.x, self.y))
+    
+    def hit(self):
+        self.health -= 1   
 
 class GameState():
     # Game limits
@@ -11,9 +49,14 @@ class GameState():
     # Player position
     x: int
     y: int
+    movemenetSpeed: int = 6
     
     # Bullet positions (list of tuples of x, y)
+    maxBullets: int = 30
     bullets: list = []
+    
+    # Asteroid Metadata
+    asteroids: list[Asteroid] = []
     
     def __init__(self, x, y):
         self.x = x
@@ -22,31 +65,33 @@ class GameState():
         self.gameHeightLimit = y * 2
 
     def moveLeft(self):
-        self.x -= 8
+        self.x -= self.movemenetSpeed
         
         # Check if the player is out of the screen
         if self.x < 0:
             self.x = 0
     
     def moveRight(self):
-        self.x += 8
+        self.x += self.movemenetSpeed
         if self.x > self.gameWidthLimit - 50:
             self.x = self.gameWidthLimit - 50
     
     def moveUp(self):
-        self.y -= 8
+        self.y -= self.movemenetSpeed
         # Check if the player is out of the screen
         if self.y < 0:
             self.y = 0
 
     def moveDown(self):
-        self.y += 8
+        self.y += self.movemenetSpeed
         # Check if the player is out of the screen
         if self.y > self.gameHeightLimit - 50:
             self.y = self.gameHeightLimit - 50
     
     def shoot(self):
-        self.bullets.append((self.x, self.y))
+        # Limit the number of bullets on the screen
+        if len(self.bullets) < self.maxBullets:
+            self.bullets.append((self.x + 25, self.y))
     
     def updateBullets(self):
         for i, bullet in enumerate(self.bullets):
@@ -56,6 +101,35 @@ class GameState():
             # Remove bullets that are out of the screen
             if y < 0:
                 self.bullets.pop(i)
+    
+    def spawnAsteroid(self):
+        self.asteroids.append(Asteroid(self.gameWidthLimit))
+        
+    def moveAsteroids(self):
+        for i, asteroid in enumerate(self.asteroids):
+            asteroid.move()
+            for asteroid in self.asteroids:
+                if asteroid.y > self.gameHeightLimit + asteroid.size:
+                    self.asteroids.pop(i)
+                    
+    def checkBulletHitsAsteroid(self):
+        print("Checking bullet hits")
+        for asteroid in self.asteroids: 
+            asteroidCoordinates = (asteroid.x, asteroid.y, asteroid.size)
+            print("Asteroids: ", asteroidCoordinates)
+            print("Bullets: ", self.bullets)
+                   
+            xHitbox = range(asteroid.x, asteroid.x + asteroid.size)
+            yHitbox = range(asteroid.y, asteroid.y - asteroid.size)
+            
+            # Check if the bullet is within the asteroid's hitbox
+            for bullet in self.bullets:
+                if bullet[0] in xHitbox and bullet[1] in yHitbox:
+                    asteroid.hit()
+                    self.bullets.remove(bullet)
+                    
+                    if asteroid.health <= 0:
+                        self.asteroids.remove(asteroid)
 
 class UserInterface():
     def __init__(self):
@@ -113,6 +187,15 @@ class UserInterface():
         # Update existing bullets positions
         self.gameState.updateBullets()
         
+        # Every 30 frames, create a new asteroid
+        if pygame.time.get_ticks() % 1000 == 0:
+            self.gameState.spawnAsteroid()
+        
+        # Move asteroids
+        self.gameState.moveAsteroids()
+        
+        # Check if bullets hit asteroids
+        self.gameState.checkBulletHitsAsteroid()
 
     def render(self):
         # Set the background image to the screen
@@ -123,7 +206,11 @@ class UserInterface():
         
         # Draw bullets on the screen
         for bullet in self.gameState.bullets:
-            pygame.draw.circle(self.window, (159,238,152), bullet, 2)
+            pygame.draw.circle(self.window, (159,238,152), bullet, 1)
+            
+        # Draw asteroids on the screen
+        for asteroid in self.gameState.asteroids:
+            asteroid.draw(self.window)
         
         pygame.display.flip()  
           
