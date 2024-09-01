@@ -188,7 +188,7 @@ class UserInterface():
         self.gameState.updateBullets()
         
         # Every 30 frames, create a new asteroid
-        if pygame.time.get_ticks() % 1000 == 0:
+        if pygame.time.get_ticks() % 120 == 0:
             self.gameState.spawnAsteroid()
         
         # Move asteroids
