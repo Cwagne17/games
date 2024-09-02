@@ -18,7 +18,7 @@ class App:
         self.region = Region()
         
         # Add the character to the game
-        self.character = Character("Player 1", 100, 5)
+        self.character = Character("Player 1", 100, 10)
 
  
     def on_event(self, event):
@@ -29,10 +29,15 @@ class App:
     def on_loop(self):
         """"Hanldes the game play including key presses, mouse clicks, and game specifc logic like moving the player"""
         keys = pygame.key.get_pressed()
+
+        # If no keys are pressed, set the character to idle
+        if not keys[K_a] and not keys[K_s] and not keys[K_d] and not keys[K_w]:
+            self.character.set_idle()
+
         if keys[K_w] and self.character.get_y() + self.character.get_margin() > 0:
             self.character.move_up()
         
-        print(self.character.get_y(), self.height, self.character.get_margin())
+        # print(self.character.get_y(), self.height, self.character.get_margin())
         if keys[K_s] and self.character.get_y() + self.character.get_margin() < self.height:
             self.character.move_down()
         
