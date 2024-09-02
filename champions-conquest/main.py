@@ -37,8 +37,8 @@ class App:
             self.character.move_left()
         if keys[K_RIGHT] or keys[K_d]:
             self.character.move_right()
-        if keys[K_SPACE]:
-            print("Space bar pressed")
+            
+        self.character.setAttacking(keys[K_SPACE])
     
     def on_render(self):
         """Renders the view of the game to the screen"""

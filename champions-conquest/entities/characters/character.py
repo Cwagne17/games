@@ -9,7 +9,9 @@ class Character():
     _y: int = 100
     ## Animation variables
     _frame: int = 0
-    _sword_walk_full_sprite = {"down": [], "left": [], "right": [], "up": []}
+    _sword_walk_sprite = {"down": [], "left": [], "right": [], "up": []}
+    _sword_walk_attack_sprite = {"down": [], "left": [], "right": [], "up": []}
+    _attacking = False
     
     # The speed of the character
     _velocity: int = 5 # Default speed
@@ -26,9 +28,11 @@ class Character():
         self._speed = speed
         
         # Use the sprite sheet to load the character sprite
-        male_image = SpriteSheet("assets/Characters/Male/PNG/Sword_Walk/Sword_Walk_full.png")
+        male_walk = SpriteSheet("assets/Characters/Male/PNG/Sword_Walk/Sword_Walk_full.png")
+        male_walk_attack = SpriteSheet("assets/Characters/Male/PNG/Sword_Walk_Attack/Sword_Walk_Attack_full.png")
         for row, direction in enumerate(["down", "left", "right", "up"]):
-            self._sword_walk_full_sprite[direction] = [ male_image.get_image(row, frame, 64, 64, 2.5) for frame in range(6)]
+            self._sword_walk_sprite[direction] = [ male_walk.get_image(row, frame, 64, 64, 2.5) for frame in range(6)]
+            self._sword_walk_attack_sprite[direction] = [ male_walk_attack.get_image(row, frame, 64, 64, 2.5) for frame in range(6)]
         
     # The following functions are positional functions
     def get_x(self):
@@ -54,10 +58,15 @@ class Character():
         self._direction = "right"
         
     # The following functions are action functions
+    def setAttacking(self, attacking: bool = False):
+        self._attacking = attacking
     
     # The following function renders the character
     def draw(self, display: pygame.Surface, frame: int):
-        display.blit(self._sword_walk_full_sprite[self._direction][frame], (self._x, self._y))
+        if (self._attacking):
+            display.blit(self._sword_walk_attack_sprite[self._direction][frame], (self._x, self._y))
+        else:
+            display.blit(self._sword_walk_sprite[self._direction][frame], (self._x, self._y))
         
         
         
