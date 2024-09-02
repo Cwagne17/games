@@ -29,13 +29,17 @@ class App:
     def on_loop(self):
         """"Hanldes the game play including key presses, mouse clicks, and game specifc logic like moving the player"""
         keys = pygame.key.get_pressed()
-        if keys[K_UP] or keys[K_w]:
+        if keys[K_w] and self.character.get_y() + self.character.get_margin() > 0:
             self.character.move_up()
-        if keys[K_DOWN] or keys[K_s]:
+        
+        print(self.character.get_y(), self.height, self.character.get_margin())
+        if keys[K_s] and self.character.get_y() + self.character.get_margin() < self.height:
             self.character.move_down()
-        if keys[K_LEFT] or keys[K_a]:
+        
+        if keys[K_a] and self.character.get_x() + self.character.get_margin() > 0:
             self.character.move_left()
-        if keys[K_RIGHT] or keys[K_d]:
+            
+        if keys[K_d] and self.character.get_x() + self.character.get_margin() < self.width:
             self.character.move_right()
             
         self.character.setAttacking(keys[K_SPACE])

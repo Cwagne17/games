@@ -7,20 +7,21 @@ class Character():
     _direction: str = "left"
     _x: int = 100
     _y: int = 100
-    ## Animation variables
+    _height: int = 64
+    _width: int = 64
+    
+    # Animation variables
+    _scale: float = 2.5
     _frame: int = 0
     _sword_walk_sprite = {"down": [], "left": [], "right": [], "up": []}
     _sword_walk_attack_sprite = {"down": [], "left": [], "right": [], "up": []}
     _attacking = False
     
-    # The speed of the character
+    # Character attributes
+    _name: str = "Base Character"
+    _health: int = 100
     _velocity: int = 5 # Default speed
     
-    # The health of the character
-    _health: int = 100
-    
-    # The name of the character
-    _name: str = "Base Character"
     
     def __init__(self, name, health, speed):
         self._name = name
@@ -31,8 +32,8 @@ class Character():
         male_walk = SpriteSheet("assets/Characters/Male/PNG/Sword_Walk/Sword_Walk_full.png")
         male_walk_attack = SpriteSheet("assets/Characters/Male/PNG/Sword_Walk_Attack/Sword_Walk_Attack_full.png")
         for row, direction in enumerate(["down", "left", "right", "up"]):
-            self._sword_walk_sprite[direction] = [ male_walk.get_image(row, frame, 64, 64, 2.5) for frame in range(6)]
-            self._sword_walk_attack_sprite[direction] = [ male_walk_attack.get_image(row, frame, 64, 64, 2.5) for frame in range(6)]
+            self._sword_walk_sprite[direction] = [ male_walk.get_image(row, frame, 64, 64, self._scale) for frame in range(6)]
+            self._sword_walk_attack_sprite[direction] = [ male_walk_attack.get_image(row, frame, 64, 64, self._scale) for frame in range(6)]
         
     # The following functions are positional functions
     def get_x(self):
@@ -40,6 +41,22 @@ class Character():
     
     def get_y(self):
         return self._y
+    
+    def get_margin(self):
+        # Each sprite is an 8x8 grid where there are 2 squares above and 
+        # below the sprite and 3 on either side
+        margin = 3 if self._direction in ["left", "right"] else 2
+        
+        # Since height and width are the same, we can use either
+        _, image_height = self._sword_walk_sprite[self._direction][0].get_size()
+     
+        # Down and right can be calculated the same way
+        if self._direction in ["down", "right"]:
+            return image_height - (image_height//8 * margin)
+        
+        # Left, and up can be calculated the same way
+        return image_height//8 * margin
+        
     
     def move_up(self):
         self._y -= self._speed
