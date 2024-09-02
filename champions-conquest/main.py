@@ -3,7 +3,21 @@ from pygame.locals import *
 from entities.maps.region import Region
 
 
+class SpriteSheet():
+    def __init__(self, image):
+        self.sheet = pygame.image.load(image).convert_alpha()
+
+    def get_image(self, frame, width, height, scale, colour):
+        image = pygame.Surface((width, height)).convert_alpha()
+        image.blit(self.sheet, (0, 0), ((frame * width), 0, width, height))
+        image = pygame.transform.scale(image, (width * scale, height * scale))
+        image.set_colorkey(colour)
+
+        return image
+
 FPS = 60
+
+
 
 class App:
     def __init__(self):
@@ -19,6 +33,13 @@ class App:
         pygame.init()
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
+        
+        # Temporary animation testing
+        male_image = SpriteSheet("assets/Characters/Male/PNG/Sword_Walk/Sword_Walk_full.png")
+        self.male_sprite = []
+        for i in range(6):
+            print("frame: ", i)
+            self.male_sprite.append(male_image.get_image(i, 48, 48, 2, (0, 0, 0)))
  
     def on_event(self, event):
         """"Handles native and custom pygame events that are triggered by the user"""
@@ -32,6 +53,19 @@ class App:
     def on_render(self):
         """Renders the view of the game to the screen"""
         self.region.draw(self._display_surf)
+        
+        # Select each index for 3 frames each
+        # index = (pygame.time.get_ticks() // 180) % 8
+        # self._display_surf.blit(self.male_sprite[index], (200, 200))
+        self._display_surf.blit(self.male_sprite[0], (250, 200))
+        self._display_surf.blit(self.male_sprite[1], (300, 200))
+        self._display_surf.blit(self.male_sprite[2], (350, 200))
+        self._display_surf.blit(self.male_sprite[3], (400, 200))
+        self._display_surf.blit(self.male_sprite[4], (450, 200))
+        self._display_surf.blit(self.male_sprite[5], (500, 200))
+
+        
+        
         pygame.display.update()
     
     def on_cleanup(self):
