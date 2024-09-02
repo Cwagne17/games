@@ -1,42 +1,25 @@
 import pygame
 from pygame.locals import *
 from entities.maps.region import Region
-
-
-class SpriteSheet():
-    def __init__(self, image):
-        self.sheet = pygame.image.load(image).convert_alpha()
-
-    def get_image(self, frame, width, height, scale, separation):
-        image = pygame.Surface((width, height)).convert_alpha()
-        image.blit(self.sheet, (0, 0), ((frame * width), 128, width, height))
-        image = pygame.transform.scale(image, (width * scale, height * scale))
-        image.set_colorkey((0, 0, 0))
-        return image
+from entities.characters.character import Character
 
 FPS = 60
 
 class App:
     def __init__(self):
-        self._running = True
-        self._display_surf = None
+        # Init the game the display
+        pygame.init()
         self.size = self.width, self.height = 1280, 720
-        self.clock = pygame.time.Clock()
+        self._display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        self._clock = pygame.time.Clock()
+        self._running = True
         
         # Add the region to the game
         self.region = Region()
         
-        # Init the game the display
-        pygame.init()
-        self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
-        self._running = True
-        
-        # Temporary animation testing
-        male_image = SpriteSheet("assets/Characters/Male/PNG/Sword_Walk/Sword_Walk_full.png")
-        self.male_sprite = []
-        for i in range(6):
-            print("frame: ", i)
-            self.male_sprite.append(male_image.get_image(i, 64, 64, 2.5, (0, 0, 0)))
+        # Add the character to the game
+        self.character = Character("Player 1", 100, 5)
+
  
     def on_event(self, event):
         """"Handles native and custom pygame events that are triggered by the user"""
@@ -45,15 +28,25 @@ class App:
 
     def on_loop(self):
         """"Hanldes the game play including key presses, mouse clicks, and game specifc logic like moving the player"""
-        pass
+        keys = pygame.key.get_pressed()
+        if keys[K_UP] or keys[K_w]:
+            self.character.move_up()
+        if keys[K_DOWN] or keys[K_s]:
+            self.character.move_down()
+        if keys[K_LEFT] or keys[K_a]:
+            self.character.move_left()
+        if keys[K_RIGHT] or keys[K_d]:
+            self.character.move_right()
+        if keys[K_SPACE]:
+            print("Space bar pressed")
     
     def on_render(self):
         """Renders the view of the game to the screen"""
-        self.region.draw(self._display_surf)
+        self.region.draw(self._display)
         
         # Select each index for 3 frames each
-        index = (pygame.time.get_ticks() // 180) % 6
-        self._display_surf.blit(self.male_sprite[index], (200, 200))
+        frame = (pygame.time.get_ticks() // 180) % 6
+        self.character.draw(self._display, frame)
 
         pygame.display.update()
     
@@ -64,7 +57,7 @@ class App:
         """Main game loop that runs the game"""
         while( self._running ):
             # Limit the frame rate
-            self.clock.tick(FPS)
+            self._clock.tick(FPS)
             
             # Parse pygame events
             for event in pygame.event.get():
