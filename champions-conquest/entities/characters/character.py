@@ -2,13 +2,7 @@ import pygame
 from pygame.locals import *
 from shared.spritesheet import SpriteSheet
 import os
-
-D_down = "down"
-D_left = "left"
-D_right = "right"
-D_up = "up"
-
-directions = [D_down, D_left, D_right, D_up]
+from settings import *
 
 class Character(pygame.sprite.Sprite):
     """This is the base class for all characters in the game."""
@@ -45,7 +39,7 @@ class Character(pygame.sprite.Sprite):
         # Set sprite attributes
         self.image = self.frames[self.action][self.state][self.frame_index]
         self.rect = self.image.get_rect(center = position)
-        self.hitbox = self.rect.inflate(-48 * self.scale, -32 * self.scale)
+        self.hitbox = self.rect.inflate(-48 * self.scale, -48 * self.scale)
         
     def load_images(self):
         """Loads all the images for the character. This function is called once during initialization."""
@@ -55,7 +49,7 @@ class Character(pygame.sprite.Sprite):
             action_surface: pygame.Surface = SpriteSheet(os.path.join(character_path, action + ".png"))
             self.frames[action] = {} # Initialize the action dictionary
             
-            for row, direction in enumerate(directions):
+            for row, direction in enumerate(DIRECTIONS):
                 # TODO: We need to find a way to make the number of frames for dynamic for each action because it is not always 6
                 self.frames[action][direction] = [action_surface.get_image(row, frame, 64, 64, self.scale) for frame in range(6)]
     

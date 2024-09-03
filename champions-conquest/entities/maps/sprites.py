@@ -5,6 +5,7 @@ class Sprite(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = surface
         self.rect = self.image.get_rect(topleft = position)
+        self.ground = True
 
 class CollisionSprites(pygame.sprite.Sprite):
     def __init__(self, position, surface, groups):
