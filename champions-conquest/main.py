@@ -3,8 +3,11 @@ from pygame.locals import *
 from entities.maps.region import Region
 from settings import *
 from entities.characters.character import Character
-from entities.sprites import *
+from entities.maps.sprites import *
 from random import randint
+from pytmx.util_pygame import load_pygame
+import os
+from entities.groups import AllSprites
 
 FPS = 60
 
@@ -30,19 +33,31 @@ class App:
         self.running = True
         
         # Groups
-        self.all_sprites = pygame.sprite.Group()
+        self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
         
+        self.setup()
+        
         # Add the region to the game
-        self.region = Region()
+        # self.region = Region()
         
         # Add the character to the game
-        self.character = Character("Player 1", self.all_sprites, self.collision_sprites)
-        for i in range(6):
-            x, y = randint(0, WINDOW_WIDTH), randint(0, WINDOW_HEIGHT)
-            w, h = randint(50, 100), randint(50, 100)
-            CollisionSprites((x, y), (w, h), (self.all_sprites, self.collision_sprites))
     
+    def setup(self):
+        worldMap = load_pygame(os.path.join("assets", "maps", "world.tmx"))
+        for x, y, image in worldMap.get_layer_by_name("Ground").tiles():
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites,))
+        
+        for obj in worldMap.get_layer_by_name("Objects"):
+            CollisionSprites((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
+            
+        for obj in worldMap.get_layer_by_name("Collisions"):
+            CollisionSprites((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), self.collision_sprites)
+            
+        for obj in worldMap.get_layer_by_name("Entities"):
+            if obj.name == "Player":
+                self.player = Character((obj.x, obj.y), self.all_sprites, self.collision_sprites)
+        
     def run(self):
         while( self.running ):
             # Limit the frame rate
@@ -57,8 +72,9 @@ class App:
             self.all_sprites.update(dt)
             
             # Render the game view
-            self.region.draw(self.display)
-            self.all_sprites.draw(self.display)
+            # self.region.draw(self.display)
+            self.display.fill('black')
+            self.all_sprites.draw(self.player.rect.center)
             
             # Update the display
             pygame.display.update()

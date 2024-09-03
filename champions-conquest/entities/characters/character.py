@@ -25,18 +25,15 @@ class Character(pygame.sprite.Sprite):
     ## and their respective frames for each direction [action][direction][frame]
     frames = {}
     frame_index: int = 0 # The current frame index
-    scale = 2.5 # The scale of the character
+    scale = 3 # The scale of the character
 
     # Character attributes
     name: str = "Champion"
     health: int = 100
-    speed: int = 40
+    speed: int = 50
     
-    def __init__(self, name, groups, collision_sprites):
+    def __init__(self, position, groups, collision_sprites):
         super().__init__(groups)
-        # Set the character attributes
-        self.name = name
-        
         self.collision_sprites = collision_sprites
         
         # Load images for animation
@@ -46,9 +43,8 @@ class Character(pygame.sprite.Sprite):
         self.action, self.state, self.frame_index = "sword_walk", D_down, 0
         
         # Set sprite attributes
-        height, width = pygame.display.get_window_size()
         self.image = self.frames[self.action][self.state][self.frame_index]
-        self.rect = self.image.get_rect(center = (height // 2, width // 2))
+        self.rect = self.image.get_rect(center = position)
         self.hitbox = self.rect.inflate(-48 * self.scale, -32 * self.scale)
         
     def load_images(self):
