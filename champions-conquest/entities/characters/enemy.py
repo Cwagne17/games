@@ -93,7 +93,7 @@ class OrcBrute(pygame.sprite.Sprite):
     def destroy(self):
         self.death_time = pygame.time.get_ticks()
         # Animation
-        surf = pygame.mask.from_surface(self.frames["sword_death"][self.state][0]).to_surface()
+        surf = pygame.mask.from_surface(self.frames["walk"][self.state][0]).to_surface()
         surf.set_colorkey('black')
         self.image = surf
         

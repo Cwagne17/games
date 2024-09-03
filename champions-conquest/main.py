@@ -66,21 +66,26 @@ class App:
     def entity_collisions(self):
         """Detects collisions between the player and the enemies"""
         if self.enemy_sprites:
-            # For a player hitting an enemy we'll make the collision detection larger
-            enemy_hit = pygame.sprite.spritecollide(self.player, self.enemy_sprites, False)
-            if enemy_hit:
-                for sprite in enemy_hit:
-                    sprite.destroy()
+            collisions = pygame.sprite.spritecollide(self.player, self.enemy_sprites, False, pygame.sprite.collide_mask)
+            if collisions:
+                for sprite in collisions:
+                    # TODO: The player actions should be vars so the string can't be typoed
+                    # we should define it in the player class
+                    if self.player.action == "sword_walk_attack":
+                        # TODO: We still need to make this do the death animation/hurt animation
+                        sprite.destroy()
+                    else:
+                        # TODO: This should trigger a hurt animation
+                        # there should also be a cooldown so we don't get immediately murked
+                        self.player.health -= 10
+                    
+                    if self.player.health <= 0:
+                        # TODO: This needs to implement the death animation
+                        # then kill the game at the end of the death animation
+                        # we could abstract the self.running to a variable in the
+                        # settings.py so we can update it from anywhere
+                        self.player.destroy()
 
-            # We'll use a mask to make the collision detection more accurate
-            player_hit = pygame.sprite.spritecollide(self.player, self.enemy_sprites, False, pygame.sprite.collide_mask)
-            if player_hit:
-                for sprite in player_hit:
-                    sprite.attack()
-                if self.player.health <= 0:
-                    self.player.destroy()
-            
-    
     def run(self):
         while( self.running ):
             dt = self.clock.tick() / 100
@@ -99,6 +104,10 @@ class App:
             # Draw
             self.display.fill('black')
             self.all_sprites.draw(self.player.rect.center)
+            # TODO: Make this health bar look better
+            pygame.draw.rect(self.display, 'black', (19, 10, 104, 20), 2)
+            pygame.draw.rect(self.display, 'red', (21, 12, self.player.health, 16))
+            
             pygame.display.update()
 
         pygame.quit()
