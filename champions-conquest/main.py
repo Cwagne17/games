@@ -5,6 +5,18 @@ from entities.characters.character import Character
 
 FPS = 60
 
+def collisions():
+    """Detects collisions between the player and the map
+    example:
+    
+    Only use collide_mask if it is needed, it is generally highly intensive on performance
+    collied_sprites = pygame.sprite.spritecollide(player, enemy_sprites, True, pygame.sprite.collide_mask)
+    if collied_sprites:
+        player.health -= 10
+    
+    """
+    pass
+
 class App:
     def __init__(self):
         # Init the game the display
@@ -18,7 +30,8 @@ class App:
         self.region = Region()
         
         # Add the character to the game
-        self.character = Character("Player 1", 100, 10)
+        self.all_sprites = pygame.sprite.Group()
+        self.character = Character(self.all_sprites, "Player 1", 100, 10)
 
  
     def on_event(self, event):
@@ -28,34 +41,17 @@ class App:
 
     def on_loop(self):
         """"Hanldes the game play including key presses, mouse clicks, and game specifc logic like moving the player"""
-        keys = pygame.key.get_pressed()
-
-        # If no keys are pressed, set the character to idle
-        if not keys[K_a] and not keys[K_s] and not keys[K_d] and not keys[K_w]:
-            self.character.set_idle()
-
-        if keys[K_w] and self.character.get_y() + self.character.get_margin() > 0:
-            self.character.move_up()
-        
-        # print(self.character.get_y(), self.height, self.character.get_margin())
-        if keys[K_s] and self.character.get_y() + self.character.get_margin() < self.height:
-            self.character.move_down()
-        
-        if keys[K_a] and self.character.get_x() + self.character.get_margin() > 0:
-            self.character.move_left()
-            
-        if keys[K_d] and self.character.get_x() + self.character.get_margin() < self.width:
-            self.character.move_right()
-            
-        self.character.setAttacking(keys[K_SPACE])
+        self.all_sprites.update()
     
     def on_render(self):
         """Renders the view of the game to the screen"""
         self.region.draw(self._display)
         
         # Select each index for 3 frames each
-        frame = (pygame.time.get_ticks() // 180) % 6
-        self.character.draw(self._display, frame)
+        # frame = (pygame.time.get_ticks() // 180) % 6
+        # self.character.draw(self._display, frame)
+        
+        self.all_sprites.draw(self._display)
 
         pygame.display.update()
     
