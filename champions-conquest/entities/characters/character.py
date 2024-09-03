@@ -16,7 +16,6 @@ class Character(pygame.sprite.Sprite):
     direction: pygame.Vector2 = pygame.Vector2(0, 0)
     
     # Animation variables
-
     ## The following actions define all potential character actions. These actions must match the
     ## name of the file in the assets/characters/champion directory
     actions = ["sword_walk_attack", "sword_walk"]    
@@ -72,30 +71,14 @@ class Character(pygame.sprite.Sprite):
         
         # Animate
         ## Update the frame index
-        self.frame_index = self.frame_index + 5 if self.direction else 0
+        if self.action == "sword_walk_attack":
+            self.frame_index += 1
+        else:
+            self.frame_index += 1 if self.direction else 0
         
         ## Set the new frame as the image
         action_frames = self.frames[self.action][self.state]
         self.image = action_frames[int(self.frame_index) % len(action_frames)]
-    
-    # def get_margin(self):
-    #     # Each sprite is an 8x8 grid where there are 2 squares above and 
-    #     # below the sprite and 3 on either side
-    #     margin = 3 if self._direction in ["left", "right"] else 2
-        
-    #     # Since height and width are the same, we can use either
-    #     _, image_height = self._sword_walk_sprite[self._direction][0].get_size()
-     
-    #     # Down and right can be calculated the same way
-    #     if self._direction in ["down", "right"]:
-    #         return image_height - (image_height//8 * margin)
-        
-    #     # Left, and up can be calculated the same way
-    #     return image_height//8 * margin
-        
-    # The following functions are action functions
-    def setAttacking(self, attacking: bool = False):
-        self.action = "sword_walk_attack" if attacking else "sword_walk"
         
     def input(self):
         keys = pygame.key.get_pressed()
@@ -104,7 +87,7 @@ class Character(pygame.sprite.Sprite):
         self.direction.y = int(keys[K_DOWN]) - int(keys[K_UP])
         self.direction = self.direction.normalize() if self.direction else self.direction
         
-        self.setAttacking(keys[K_SPACE])
+        self.action = "sword_walk_attack" if keys[K_SPACE] else "sword_walk"
         
     def update(self):
         self.input()
