@@ -10,21 +10,6 @@ import os
 from entities.groups import AllSprites
 from entities.characters.enemy import OrcBrute
 
-
-FPS = 60
-
-def collisions():
-    """Detects collisions between the player and the map
-    example:
-    
-    Only use collide_mask if it is needed, it is generally highly intensive on performance
-    collied_sprites = pygame.sprite.spritecollide(player, enemy_sprites, True, pygame.sprite.collide_mask)
-    if collied_sprites:
-        player.health -= 10
-    
-    """
-    pass
-
 class App:
     def __init__(self):
         pygame.init()
@@ -49,7 +34,7 @@ class App:
     def setup(self):
         worldMap = load_pygame(os.path.join("assets", "maps", "world.tmx"))
         for x, y, image in worldMap.get_layer_by_name("Ground").tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites,))
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites))
         
         for obj in worldMap.get_layer_by_name("Objects"):
             CollisionSprites((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
@@ -68,12 +53,12 @@ class App:
         if self.enemy_sprites:
             collisions = pygame.sprite.spritecollide(self.player, self.enemy_sprites, False, pygame.sprite.collide_mask)
             if collisions:
-                for sprite in collisions:
+                for enemy_sprite in collisions:
                     # TODO: The player actions should be vars so the string can't be typoed
                     # we should define it in the player class
                     if self.player.action == "sword_walk_attack":
                         # TODO: We still need to make this do the death animation/hurt animation
-                        sprite.destroy()
+                        enemy_sprite.destroy()
                     else:
                         # TODO: This should trigger a hurt animation
                         # there should also be a cooldown so we don't get immediately murked
