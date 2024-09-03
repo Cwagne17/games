@@ -12,7 +12,7 @@ class Character(pygame.sprite.Sprite):
     # Animation variables
     ## The following actions define all potential character actions. These actions must match the
     ## name of the file in the assets/characters/champion directory
-    actions = ["sword_walk_attack", "sword_walk"]    
+    actions = ["sword_walk_attack", "sword_walk", "sword_death"]    
     action = "sword_walk" # The current action the character is performing
     
     ## This is a dictionary that'll be constructed to hold all the character actions
@@ -40,6 +40,9 @@ class Character(pygame.sprite.Sprite):
         self.image = self.frames[self.action][self.state][self.frame_index]
         self.rect = self.image.get_rect(center = position)
         self.hitbox = self.rect.inflate(-48 * self.scale, -48 * self.scale)
+        
+        self.death_time = 0
+        self.death_duration = 400
         
     def load_images(self):
         """Loads all the images for the character. This function is called once during initialization."""
@@ -99,8 +102,22 @@ class Character(pygame.sprite.Sprite):
                 if direction == 'vertical':
                     if self.direction.y > 0: self.hitbox.bottom = sprite.rect.top
                     if self.direction.y < 0: self.hitbox.top = sprite.rect.bottom
+                    
+    def destroy(self):
+        self.death_time = pygame.time.get_ticks()
+        # Animation
+        surf = pygame.mask.from_surface(self.frames["sword_death"][self.state][0]).to_surface()
+        surf.set_colorkey('black')
+        self.image = surf
+        
+    def death_timer(self):
+        if pygame.time.get_ticks() - self.death_time > self.death_duration:
+            self.kill()
                 
     def update(self, dt):
-        self.input()
-        self.move(dt)
-        self.animate(dt)
+        if self.death_time == 0:
+            self.input()
+            self.move(dt)
+            self.animate(dt)
+        else:
+            self.death_timer()

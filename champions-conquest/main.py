@@ -63,6 +63,17 @@ class App:
             else:
                 self.spawn_positions.append((obj.x, obj.y))
         
+    def attack_collision(self):
+        """Detects collisions between the player and the enemies"""
+        if self.enemy_sprites:
+            # Check if an enemy hit the player
+            player_hit = pygame.sprite.spritecollide(self.player, self.enemy_sprites, False, pygame.sprite.collide_mask)
+            if player_hit:
+                for sprite in player_hit:
+                    sprite.attack()
+                if self.player.health <= 0:
+                    self.player.destroy()
+    
     def run(self):
         while( self.running ):
             dt = self.clock.tick() / 100
@@ -76,6 +87,7 @@ class App:
             
             # Update
             self.all_sprites.update(dt)
+            self.attack_collision()
             
             # Draw
             self.display.fill('black')
