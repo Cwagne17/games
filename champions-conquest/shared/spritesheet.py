@@ -20,5 +20,5 @@ class SpriteSheet():
         image = pygame.Surface((width, height)).convert_alpha()
         image.blit(self.sheet, (0, 0), ((frame * width), (row * height), width, height))
         image = pygame.transform.scale(image, (width * scale, height * scale))
-        image.set_colorkey((255, 0, 0))
+        image.set_colorkey((0, 0, 0))
         return image
