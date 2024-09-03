@@ -49,6 +49,7 @@ class Character(pygame.sprite.Sprite):
         height, width = pygame.display.get_window_size()
         self.image = self.frames[self.action][self.state][self.frame_index]
         self.rect = self.image.get_rect(center = (height // 2, width // 2))
+        self.hitbox = self.rect.inflate(-48 * self.scale, -32 * self.scale)
         
     def load_images(self):
         """Loads all the images for the character. This function is called once during initialization."""
@@ -90,21 +91,24 @@ class Character(pygame.sprite.Sprite):
         self.action = "sword_walk_attack" if keys[K_SPACE] else "sword_walk"
     
     def move(self, dt):
-        self.rect.x += int(self.direction.x * self.speed * dt)
+        self.hitbox.x += int(self.direction.x * self.speed * dt)
         self.collision('horizontal')
         
-        self.rect.y += int(self.direction.y * self.speed * dt)
+        self.hitbox.y += int(self.direction.y * self.speed * dt)
         self.collision('vertical')
+        
+        # Sync the hitbox with the rect
+        self.rect.center = self.hitbox.center
            
     def collision(self, direction):
         for sprite in self.collision_sprites:
-            if sprite.rect.colliderect(self.rect):
+            if sprite.rect.colliderect(self.hitbox):
                 if direction == 'horizontal':
-                    if self.direction.x > 0: self.rect.right = sprite.rect.left
-                    if self.direction.x < 0: self.rect.left = sprite.rect.right
+                    if self.direction.x > 0: self.hitbox.right = sprite.rect.left
+                    if self.direction.x < 0: self.hitbox.left = sprite.rect.right
                 if direction == 'vertical':
-                    if self.direction.y > 0: self.rect.bottom = sprite.rect.top
-                    if self.direction.y < 0: self.rect.top = sprite.rect.bottom
+                    if self.direction.y > 0: self.hitbox.bottom = sprite.rect.top
+                    if self.direction.y < 0: self.hitbox.top = sprite.rect.bottom
                 
     def update(self, dt):
         self.input()
