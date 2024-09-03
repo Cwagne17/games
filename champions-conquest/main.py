@@ -63,16 +63,23 @@ class App:
             else:
                 self.spawn_positions.append((obj.x, obj.y))
         
-    def attack_collision(self):
+    def entity_collisions(self):
         """Detects collisions between the player and the enemies"""
         if self.enemy_sprites:
-            # Check if an enemy hit the player
+            # For a player hitting an enemy we'll make the collision detection larger
+            enemy_hit = pygame.sprite.spritecollide(self.player, self.enemy_sprites, False)
+            if enemy_hit:
+                for sprite in enemy_hit:
+                    sprite.destroy()
+
+            # We'll use a mask to make the collision detection more accurate
             player_hit = pygame.sprite.spritecollide(self.player, self.enemy_sprites, False, pygame.sprite.collide_mask)
             if player_hit:
                 for sprite in player_hit:
                     sprite.attack()
                 if self.player.health <= 0:
                     self.player.destroy()
+            
     
     def run(self):
         while( self.running ):
@@ -87,7 +94,7 @@ class App:
             
             # Update
             self.all_sprites.update(dt)
-            self.attack_collision()
+            self.entity_collisions()
             
             # Draw
             self.display.fill('black')

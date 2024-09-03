@@ -33,6 +33,9 @@ class OrcBrute(pygame.sprite.Sprite):
         self.hitbox = self.rect.inflate(-48 * self.scale, -48 * self.scale)
         self.collision_sprites = collision_sprites
         self.direction = pygame.Vector2(0, 0)
+        
+        self.death_time = 0
+        self.death_duration = 400
     
     ## TODO: This needs to be abstracted out of the class so it doesn't have to load every time the
     ## class is instantiated (maybe singleton pattern?) Anyway, this function is causing a little bit
@@ -86,7 +89,21 @@ class OrcBrute(pygame.sprite.Sprite):
     
     def attack(self):
         self.player.health -= 10
+        
+    def destroy(self):
+        self.death_time = pygame.time.get_ticks()
+        # Animation
+        surf = pygame.mask.from_surface(self.frames["sword_death"][self.state][0]).to_surface()
+        surf.set_colorkey('black')
+        self.image = surf
+        
+    def death_timer(self):
+        if pygame.time.get_ticks() - self.death_time > self.death_duration:
+            self.kill()
     
     def update(self, dt):
-        self.move(dt)
-        self.animate(dt)
+        if self.death_time == 0:
+            self.move(dt)
+            self.animate(dt)
+        else:
+            self.death_timer()
