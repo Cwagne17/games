@@ -137,21 +137,8 @@ def save_map_to_image(tile_map):
     pygame.image.save(map_surface, "map.png")
     # exit()
 
-
-class Region():
+class Region(pygame.sprite.Sprite):
     tile_map =  create_tile_map()
-    # tile_map = [
-    #     [W_c, W_c, W_c, W_c, W_c],
-    #     [G_tlc, G_te, G_te, G_te, G_trc],
-    #     [G_le, G_c, G_c, G_c, G_re],
-    #     [G_le, G_c, G_c, G_c, G_re],
-    #     [G_le, G_c, G_c, G_c, G_re],
-    #     [G_le, G_c, G_c, G_c, G_re],
-    #     [G_blc, G_be, G_be, G_be, G_brc],
-    #     [W_c, W_c, W_c, W_c, W_c],
-    #     [W_c, W_c, W_c, W_c, W_c],
-    #     [W_c, W_c, W_c, W_c, W_c],        
-    # ]
     
     def __init__(self):
         pass

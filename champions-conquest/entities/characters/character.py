@@ -30,14 +30,14 @@ class Character(pygame.sprite.Sprite):
     # Character attributes
     name: str = "Champion"
     health: int = 100
-    speed: int = 5
+    speed: int = 40
     
-    def __init__(self, groups, name, health, speed):
+    def __init__(self, name, groups, collision_sprites):
         super().__init__(groups)
         # Set the character attributes
         self.name = name
-        self.health = health
-        self.speed = speed
+        
+        self.collision_sprites = collision_sprites
         
         # Load images for animation
         self.load_images()
@@ -62,7 +62,7 @@ class Character(pygame.sprite.Sprite):
                 # TODO: We need to find a way to make the number of frames for dynamic for each action because it is not always 6
                 self.frames[action][direction] = [action_surface.get_image(row, frame, 64, 64, self.scale) for frame in range(6)]
     
-    def animate(self):
+    def animate(self, dt):
         # Get state
         if self.direction.x != 0:
             self.state = 'right' if self.direction.x > 0 else 'left'
@@ -72,9 +72,9 @@ class Character(pygame.sprite.Sprite):
         # Animate
         ## Update the frame index
         if self.action == "sword_walk_attack":
-            self.frame_index += 1
+            self.frame_index += 1 * dt
         else:
-            self.frame_index += 1 if self.direction else 0
+            self.frame_index += 1 * dt if self.direction else 0
         
         ## Set the new frame as the image
         action_frames = self.frames[self.action][self.state]
@@ -88,8 +88,25 @@ class Character(pygame.sprite.Sprite):
         self.direction = self.direction.normalize() if self.direction else self.direction
         
         self.action = "sword_walk_attack" if keys[K_SPACE] else "sword_walk"
+    
+    def move(self, dt):
+        self.rect.x += int(self.direction.x * self.speed * dt)
+        self.collision('horizontal')
         
-    def update(self):
+        self.rect.y += int(self.direction.y * self.speed * dt)
+        self.collision('vertical')
+           
+    def collision(self, direction):
+        for sprite in self.collision_sprites:
+            if sprite.rect.colliderect(self.rect):
+                if direction == 'horizontal':
+                    if self.direction.x > 0: self.rect.right = sprite.rect.left
+                    if self.direction.x < 0: self.rect.left = sprite.rect.right
+                if direction == 'vertical':
+                    if self.direction.y > 0: self.rect.bottom = sprite.rect.top
+                    if self.direction.y < 0: self.rect.top = sprite.rect.bottom
+                
+    def update(self, dt):
         self.input()
-        self.rect.center += self.direction * self.speed # * dt
-        self.animate()
+        self.move(dt)
+        self.animate(dt)

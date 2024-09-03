@@ -1,7 +1,10 @@
 import pygame
 from pygame.locals import *
 from entities.maps.region import Region
+from settings import *
 from entities.characters.character import Character
+from entities.sprites import *
+from random import randint
 
 FPS = 60
 
@@ -21,60 +24,47 @@ class App:
     def __init__(self):
         # Init the game the display
         pygame.init()
-        self.size = self.width, self.height = 1280, 720
-        self._display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
-        self._clock = pygame.time.Clock()
-        self._running = True
+        self.size = self.width, self.height = WINDOW_WIDTH, WINDOW_HEIGHT
+        self.display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        self.clock = pygame.time.Clock()
+        self.running = True
+        
+        # Groups
+        self.all_sprites = pygame.sprite.Group()
+        self.collision_sprites = pygame.sprite.Group()
         
         # Add the region to the game
         self.region = Region()
         
         # Add the character to the game
-        self.all_sprites = pygame.sprite.Group()
-        self.character = Character(self.all_sprites, "Player 1", 100, 10)
-
- 
-    def on_event(self, event):
-        """"Handles native and custom pygame events that are triggered by the user"""
-        if event.type == pygame.QUIT:
-            self._running = False
-
-    def on_loop(self):
-        """"Hanldes the game play including key presses, mouse clicks, and game specifc logic like moving the player"""
-        self.all_sprites.update()
+        self.character = Character("Player 1", self.all_sprites, self.collision_sprites)
+        for i in range(6):
+            x, y = randint(0, WINDOW_WIDTH), randint(0, WINDOW_HEIGHT)
+            w, h = randint(50, 100), randint(50, 100)
+            CollisionSprites((x, y), (w, h), (self.all_sprites, self.collision_sprites))
     
-    def on_render(self):
-        """Renders the view of the game to the screen"""
-        self.region.draw(self._display)
-        
-        # Select each index for 3 frames each
-        # frame = (pygame.time.get_ticks() // 180) % 6
-        # self.character.draw(self._display, frame)
-        
-        self.all_sprites.draw(self._display)
-
-        pygame.display.update()
-    
-    def on_cleanup(self):
-        pygame.quit()
- 
-    def on_execute(self):
-        """Main game loop that runs the game"""
-        while( self._running ):
+    def run(self):
+        while( self.running ):
             # Limit the frame rate
-            self._clock.tick(FPS)
+            dt = self.clock.tick() / 100
             
             # Parse pygame events
             for event in pygame.event.get():
-                self.on_event(event)
+                if event.type == pygame.QUIT:
+                    self.running = False
             
             # Update the game state
-            self.on_loop()
+            self.all_sprites.update(dt)
             
             # Render the game view
-            self.on_render()
-        self.on_cleanup()
+            self.region.draw(self.display)
+            self.all_sprites.draw(self.display)
+            
+            # Update the display
+            pygame.display.update()
+        pygame.quit()
+
  
 if __name__ == "__main__" :
     ccApp = App()
-    ccApp.on_execute()
+    ccApp.run()
