@@ -3,15 +3,81 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "maps/world.tmx",
     "expandedProjectPaths": [
+        ".",
+        "maps"
     ],
     "fileStates": {
+        "/Users/christopher.wagner/Downloads/5games-main/Vampire survivor/data/tilesets/Objects.tsx": {
+            "scaleInDock": 1
+        },
+        "/Users/christopher.wagner/Downloads/5games-main/Vampire survivor/data/tilesets/world_tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "maps/level1.tmx": {
+            "scale": 0.9213020833333333,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 782.5880490700437,
+                "y": 344.07824071456844
+            }
+        },
+        "maps/map1.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": -251,
+                "y": 848
+            }
+        },
+        "maps/world.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 858,
+                "y": 652
+            }
+        },
+        "tilesets/Map_tiles.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/fog.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/map1.tmx": {
+            "scale": 28.7671875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 15.99044049752865,
+                "y": 15.99044049752865
+            }
+        },
+        "tilesets/world tileset.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        }
     },
+    "last.imagePath": "/Users/christopher.wagner/Documents/Personal/games/tiled/graphics/tilesets",
+    "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
+        "maps/map1.tmx",
+        "tilesets/Map_tiles.tsx",
+        "tilesets/world tileset.tsx",
+        "maps/world.tmx"
     ],
     "project": "untitled.tiled-project",
     "recentFiles": [
-    ]
+        "maps/map1.tmx",
+        "tilesets/Map_tiles.tsx",
+        "tilesets/world tileset.tsx",
+        "maps/world.tmx",
+        "tilesets/fog.tsx",
+        "maps/level1.tmx",
+        "tilesets/map1.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
 }
