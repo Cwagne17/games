@@ -79,8 +79,8 @@ class App:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-                if event.type == self.enemy_event:
-                    OrcBrute(choice(self.spawn_positions), (self.all_sprites, self.enemy_sprites), self.player, self.collision_sprites)
+                # if event.type == self.enemy_event:
+                #     OrcBrute(choice(self.spawn_positions), (self.all_sprites, self.enemy_sprites), self.player, self.collision_sprites)
             
             # Update
             self.all_sprites.update(dt)
