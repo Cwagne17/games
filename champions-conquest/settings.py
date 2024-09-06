@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 from os.path import join
 
 WINDOW_HEIGHT = 720

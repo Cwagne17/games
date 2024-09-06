@@ -1,9 +1,86 @@
-import pygame
-from pygame.locals import *
 from shared.spritesheet import SpriteSheet
-import os
 from settings import *
+from abc import ABC, abstractmethod
 
+class Character(ABC, pygame.sprite.Sprite):
+    """"""
+    @property
+    @abstractmethod
+    def direction(self) -> pygame.Vector2: pass
+    
+    @property
+    @abstractmethod
+    def actions(self) -> list: pass
+    
+    @property
+    @abstractmethod
+    def action(self) -> str: pass
+    
+    def __init__(self, groups):
+        super().__init__(groups)
+        
+        # We need to init things like hitboxes and rects here
+        # anything that is shared between all characters (health
+        # speed, etc..) should be initialized here as well
+        
+    @abstractmethod
+    def get_direction(self) -> None:
+        """This function is used to update the direction of the player or
+        enemy based on the input from the user. This function is called prior
+        to the move function.
+        
+        Having two separate functions for getting the direction and moving
+        allows us to reuse the move function for both the player and the enemy
+        while keeping the get_direction function separate for each.
+        
+        For example, the player's get_direction function would be based on the
+        user's input while the enemy's get_direction function would be based on
+        the game's logic.
+        """
+        pass
+
+    # TODO: we might be able to implement this in a way that is more dynamic so that we don't have to
+    # implement it in every subclass. If we can do this then we don't need to make it abstract
+    @abstractmethod
+    def animate(self, dt: float) -> None: pass
+    
+    def move(self, dt) -> None:
+        self.hitbox.x += int(self.direction.x * self.speed * dt)
+        self.collision('horizontal')
+        
+        self.hitbox.y += int(self.direction.y * self.speed * dt)
+        self.collision('vertical')
+        
+        # Sync the hitbox with the rect
+        self.rect.center = self.hitbox.center
+    
+    def collision(self, direction):
+        for sprite in self.collision_sprites:
+            if sprite.rect.colliderect(self.hitbox):
+                if direction == 'horizontal':
+                    if self.direction.x > 0: self.hitbox.right = sprite.rect.left
+                    if self.direction.x < 0: self.hitbox.left = sprite.rect.right
+                if direction == 'vertical':
+                    if self.direction.y > 0: self.hitbox.bottom = sprite.rect.top
+                    if self.direction.y < 0: self.hitbox.top = sprite.rect.bottom
+
+    # TODO: this needs to be updated to handle the different types of animation actions i.e hurt, dead, attack, etc..
+    def update(self, dt):
+        if self.death_time == 0:
+            # self.input() # input is being replaced with get_direction since we are abstracting it out
+            self.get_direction()
+            self.move(dt)
+            self.animate(dt)
+        else:
+            self.death_timer()
+    
+def Champion(Character):
+    def __init__(self, groups):
+        super().__init__(groups)
+        
+        self.actions = [ChampionActions.sword_walk_attack, ChampionActions.sword_walk, ChampionActions.sword_death, ChampionActions.sword_idle]
+        self.action = ChampionActions.sword_idle
+        
 # TODO: This is temporary, we need to find a way to make the number of frames dynamic
 # for each action because it is not always 6 (e.g. sword_idle is 12 for up, left, right but 4 for down)
 class ChampionActions(enumerate):
@@ -55,10 +132,10 @@ class Character(pygame.sprite.Sprite):
         
     def load_images(self):
         """Loads all the images for the character. This function is called once during initialization."""
-        character_path = os.path.join("assets", "characters", "champion")
+        character_path = join("assets", "characters", "champion")
         
         for action in self.actions:
-            action_surface: pygame.Surface = SpriteSheet(os.path.join(character_path, action["name"] + ".png"))
+            action_surface: pygame.Surface = SpriteSheet(join(character_path, action["name"] + ".png"))
             self.frames[action["name"]] = {} # Initialize the action dictionary
             
             for row, direction in enumerate(DIRECTIONS):
