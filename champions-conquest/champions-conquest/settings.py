@@ -1,6 +1,6 @@
 from os.path import join
 from os import walk
-from typing import List, Dict, Tuple, Optional, TypeVar
+from typing import List, Dict, Tuple, Optional, TypeVar, Any
 import pygame
 from pygame.locals import *
 
@@ -29,7 +29,11 @@ C_orc_brute: Class = "orc_brute"
 C_orc_commander: Class = "orc_commander"
 C_orc_grunt: Class = "orc_grunt"
 
+SCALE: float = 3.0
+
 # Action Settings
+
+HURT_COOLDOWN: int = 500
 
 Action = TypeVar("Action")
 
@@ -41,7 +45,7 @@ A_run: Action = "run"
 A_walk_attack: Action = "walk_attack"
 A_walk: Action = "walk"
 
-ACTIONS: List[Action] = [A_attack, A_death, A_hurt, A_idle, A_walk]
+ACTIONS: List[Action] = [A_attack, A_death, A_hurt, A_idle, A_walk_attack, A_walk]
 
 Frames = Dict[Action, Dict[Direction, List[pygame.Surface]]]
 
@@ -87,5 +91,5 @@ CHARACTER_ACTION_FRAMES: Dict[Action, Dict[Class, int]] = {
         C_orc_brute: 6,
         C_orc_commander: 6,
         C_orc_grunt: 6,
-    }
+    },
 }
