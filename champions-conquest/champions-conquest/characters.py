@@ -1,42 +1,22 @@
-from shared.spritesheet import SpriteSheet
 from settings import *
 from abc import ABC, abstractmethod
+from shared.spritesheet import SpriteSheet
 
 class Character(ABC, pygame.sprite.Sprite):
-    """"""
-    @property
-    @abstractmethod
-    def direction(self) -> pygame.Vector2: pass
+    image: pygame.Surface
+    rect: pygame.Rect
+    speed: int
     
-    @property
-    @abstractmethod
-    def actions(self) -> list: pass
+    actions: List[str]
+    action: List[str]
     
-    @property
-    @abstractmethod
-    def action(self) -> str: pass
-    
-    def __init__(self, groups):
+    def __init__(self, groups: List[pygame.sprite.Group]):
         super().__init__(groups)
         
-        # We need to init things like hitboxes and rects here
-        # anything that is shared between all characters (health
-        # speed, etc..) should be initialized here as well
+        self.direction = pygame.Vector2(0, 0)
         
     @abstractmethod
     def get_direction(self) -> None:
-        """This function is used to update the direction of the player or
-        enemy based on the input from the user. This function is called prior
-        to the move function.
-        
-        Having two separate functions for getting the direction and moving
-        allows us to reuse the move function for both the player and the enemy
-        while keeping the get_direction function separate for each.
-        
-        For example, the player's get_direction function would be based on the
-        user's input while the enemy's get_direction function would be based on
-        the game's logic.
-        """
         pass
 
     # TODO: we might be able to implement this in a way that is more dynamic so that we don't have to
@@ -45,9 +25,12 @@ class Character(ABC, pygame.sprite.Sprite):
     def animate(self, dt: float) -> None: pass
     
     def move(self, dt) -> None:
+        # TODO: once rect's are replaced with frects we can remove the int() cast
+        # to allow for more precise movement
         self.hitbox.x += int(self.direction.x * self.speed * dt)
         self.collision('horizontal')
         
+        # TODO: same as above (remove int() cast)
         self.hitbox.y += int(self.direction.y * self.speed * dt)
         self.collision('vertical')
         

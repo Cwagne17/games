@@ -3,3 +3,4 @@ numpy==2.1.0
 noise==1.2.2
 pillow==10.4.0
 pytmx==3.32
+mypy==1.11.2

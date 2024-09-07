@@ -1,16 +1,12 @@
-import pygame
-from pygame.locals import *
-from entities.maps.region import Region
 from settings import *
-from entities.characters.character import Character
-from entities.maps.sprites import *
+from characters import Character
+from sprites import *
 from random import randint, choice
 from pytmx.util_pygame import load_pygame
-import os
-from entities.groups import AllSprites
-from entities.characters.enemy import OrcBrute
+from groups import AllSprites
+from enemy import OrcBrute
 
-class App:
+class Game:
     def __init__(self):
         pygame.init()
         self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -32,7 +28,7 @@ class App:
         self.setup()
         
     def setup(self):
-        worldMap = load_pygame(os.path.join("assets", "maps", "world.tmx"))
+        worldMap = load_pygame(join("assets", "maps", "world.tmx"))
         for x, y, image in worldMap.get_layer_by_name("Ground").tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites))
         
@@ -89,6 +85,7 @@ class App:
             # Draw
             self.display.fill('black')
             self.all_sprites.draw(self.player.rect.center)
+            
             # TODO: Make this health bar look better
             pygame.draw.rect(self.display, 'black', (19, 10, 104, 20), 2)
             pygame.draw.rect(self.display, 'red', (21, 12, self.player.health, 16))
@@ -98,5 +95,5 @@ class App:
         pygame.quit()
  
 if __name__ == "__main__" :
-    ccApp = App()
-    ccApp.run()
+    game = Game()
+    game.run()
