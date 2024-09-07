@@ -1,5 +1,5 @@
 from settings import *
-from characters import Character
+from characters import Champion
 from sprites import *
 from random import randint, choice
 from pytmx.util_pygame import load_pygame
@@ -28,7 +28,7 @@ class Game:
         self.setup()
         
     def setup(self):
-        worldMap = load_pygame(join("assets", "maps", "world.tmx"))
+        worldMap = load_pygame(join("../assets", "maps", "world.tmx"))
         for x, y, image in worldMap.get_layer_by_name("Ground").tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites))
         
@@ -40,7 +40,7 @@ class Game:
         
         for obj in worldMap.get_layer_by_name("Entities"):
             if obj.name == "Player":
-                self.player = Character((obj.x, obj.y), self.all_sprites, self.collision_sprites)
+                self.player = Champion((obj.x, obj.y), self.all_sprites, self.collision_sprites)
             else:
                 self.spawn_positions.append((obj.x, obj.y))
         

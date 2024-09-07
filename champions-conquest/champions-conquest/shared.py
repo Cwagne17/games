@@ -20,6 +20,26 @@ def load_images(self):
                         surface = pygame.image.load(full_path).convert_alpha()
                         self.frames[state].append(surface)
 
+def load_sprite_frames(character_class: Class, scale: Optional[float] = 3.0) -> Frames:
+    """Loads the sprite frames for a character
+
+    Args:
+        character_class (Class): The character class to load the frames for
+        scale (Optional[float], optional): The scale to resize the image. Defaults to 3.0.
+
+    Returns:
+        Frames: The frames for the character
+    """
+    frames: Frames = {}
+    directory_path = join(ASSETS_PATH, "characters", character_class)
+    for action in ACTIONS:
+        frames[action] = {} # Initialize the action dictionary
+
+        action_surface: SpriteSheet = SpriteSheet(join(directory_path, action + ".png"))
+        for row, direction in enumerate(DIRECTIONS):
+            frames[action][direction] = [action_surface.get_image(row, frame, TILE_SIZE, TILE_SIZE, scale) for frame in range(CHARACTER_ACTION_FRAMES[action][character_class])]
+    
+
 class SpriteSheet():
     def __init__(self, image):
         self.sheet = pygame.image.load(image).convert_alpha()

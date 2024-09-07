@@ -1,5 +1,5 @@
 from settings import *
-from shared.spritesheet import SpriteSheet
+from shared import SpriteSheet
 
 class OrcBrute(pygame.sprite.Sprite):
     # Animation variables
